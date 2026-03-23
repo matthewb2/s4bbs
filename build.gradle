@@ -35,6 +35,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // FTP 통신을 위한 핵심 라이브러리
+    implementation 'commons-net:commons-net:3.10.0'
 }
 
 tasks.named('test') {

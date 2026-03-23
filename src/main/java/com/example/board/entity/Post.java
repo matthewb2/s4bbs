@@ -2,6 +2,8 @@ package com.example.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +32,9 @@ public class Post {
     private Long userId;
     private String userName;
 
+    @CreationTimestamp // 데이터 생성 시 현재 시간 자동 삽입
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp // 데이터 수정 시 현재 시간 자동 갱신
     private LocalDateTime updatedAt;
 }
