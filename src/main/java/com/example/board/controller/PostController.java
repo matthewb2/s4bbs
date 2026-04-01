@@ -25,6 +25,7 @@ public class PostController {
     // 65라인 근처: 이 메서드가 클래스 중괄호 안에 있어야 합니다!
     @GetMapping("")
     public ResponseEntity<PostListResponse> getPosts(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -32,17 +33,18 @@ public class PostController {
             @RequestParam(value = "sort", required = false) String sort
     ) {
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return ResponseEntity.ok(postService.findAllPosts(type, keyword, pageable));
+        return ResponseEntity.ok(postService.findAllPosts(type, keyword, pageable, clientId));
     }
 
     @PostMapping
     public PostCreateResponse create(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestBody PostCreateRequest dto
     ) {
 
         System.out.println(dto);
 
-        return postService.create(dto);
+        return postService.create(dto, clientId);
     }
     @GetMapping("/{id}")
     public PostResponse findById(@PathVariable Long id) {
@@ -51,6 +53,7 @@ public class PostController {
 
     @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Post> createPostWithImage(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestPart("post") PostRequest postRequest, // 게시글 내용 (JSON)
             @RequestPart(value = "file", required = false) MultipartFile file // 이미지 파일
     ) {
@@ -67,6 +70,7 @@ public class PostController {
                 .content(postRequest.getContent())
                 .image(savedFileName) // 저장된 UUID 파일명 기록
                 .userName(postRequest.getUserName())
+                .clientId(clientId)
                 .build();
 
         Post savedPost = postService.save(post);

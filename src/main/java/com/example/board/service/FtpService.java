@@ -15,8 +15,8 @@ import java.util.UUID;
 @Service
 public class FtpService {
 
-    @Value("${ftp.server}")
-    private String server;
+    @Value("${ftp.host}")
+    private String host;
 
     @Value("${ftp.port}")
     private int port;
@@ -38,7 +38,7 @@ public class FtpService {
 
         try {
             // 1. 서버 접속 및 로그인
-            ftpClient.connect(server, port);
+            ftpClient.connect(host, port);
             ftpClient.login(username, password);
 
             // 2. 설정 (패시브 모드 필수)

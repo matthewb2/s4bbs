@@ -8,34 +8,38 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "post")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;        // default post
-    private String title;
-    private String content;
+    private String type;
+
+    private String email;
+
+    private String password;
+
+    private String name;
+
     private String image;
-    private String tag;
-    private Long productId;
 
-    private Integer views;
+    private String phone;
 
-    private Long userId;
-    private String userName;
-    private String clientId;
+    private String address;
 
-    @CreationTimestamp // 데이터 생성 시 현재 시간 자동 삽입
+    @Column(columnDefinition = "TEXT")
+    private String extra;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp // 데이터 수정 시 현재 시간 자동 갱신
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

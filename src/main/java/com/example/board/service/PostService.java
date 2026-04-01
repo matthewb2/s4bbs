@@ -34,7 +34,7 @@ public class PostService {
 
 
 
-    public PostCreateResponse create(PostCreateRequest req) {
+    public PostCreateResponse create(PostCreateRequest req, String clientId) {
 
 
         LocalDateTime now = LocalDateTime.now();
@@ -49,6 +49,7 @@ public class PostService {
                 .views(0)
                 .userId(4L)              // ★ 인증 붙으면 교체
                 .userName("제이지")       // ★ 인증 붙으면 교체
+                .clientId(clientId)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -104,15 +105,24 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public PostListResponse findAllPosts(String type, String keyword, Pageable pageable) {
-        // 간단한 동적 검색 (keyword가 있으면 제목/내용 검색)
+    public PostListResponse findAllPosts(String type, String keyword, Pageable pageable, String clientId) {
         Page<Post> postPage;
-        if (type != null && keyword != null) {
-            postPage = postRepository.findByTypeAndTitleContaining(type, keyword, pageable);
-        } else if (type != null) {
-            postPage = postRepository.findByType(type, pageable);
+        if (clientId != null && !clientId.isEmpty()) {
+            if (type != null && keyword != null) {
+                postPage = postRepository.findByClientIdAndTypeAndTitleContaining(clientId, type, keyword, pageable);
+            } else if (type != null) {
+                postPage = postRepository.findByClientIdAndType(clientId, type, pageable);
+            } else {
+                postPage = postRepository.findByClientId(clientId, pageable);
+            }
         } else {
-            postPage = postRepository.findAll(pageable);
+            if (type != null && keyword != null) {
+                postPage = postRepository.findByTypeAndTitleContaining(type, keyword, pageable);
+            } else if (type != null) {
+                postPage = postRepository.findByType(type, pageable);
+            } else {
+                postPage = postRepository.findAll(pageable);
+            }
         }
 // PostService.java 내의 해당 부분 수정
         List<PostItem> items = postPage.getContent().stream()

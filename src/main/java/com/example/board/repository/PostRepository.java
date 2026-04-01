@@ -17,4 +17,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // (선택) 만약 제목뿐만 아니라 내용까지 검색하고 싶다면 아래와 같이 작성할 수도 있습니다.
     // Page<Post> findByTypeAndTitleContainingOrContentContaining(String type, String title, String content, Pageable pageable);
+
+    Page<Post> findByClientId(String clientId, Pageable pageable);
+
+    Page<Post> findByClientIdAndType(String clientId, String type, Pageable pageable);
+
+    Page<Post> findByClientIdAndTypeAndTitleContaining(String clientId, String type, String title, Pageable pageable);
 }
