@@ -1,11 +1,14 @@
 package com.example.board.dto;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter // @Data 대신 사용
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostItem {
     private Long _id;
     private String type;
@@ -15,12 +18,13 @@ public class PostItem {
     private String createdAt;
     private String updatedAt;
 
-    // Map 대신 전용 Static 클래스 또는 외부 DTO 사용
     private PostUser user;
     private Integer repliesCount;
 
-    @Data
+    @Getter // 내부 클래스도 동일하게 수정
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostUser {
         private Long _id;
         private String name;
