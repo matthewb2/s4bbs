@@ -23,7 +23,7 @@ public class PostController {
     private final FtpService ftpService;
 
     // 65라인 근처: 이 메서드가 클래스 중괄호 안에 있어야 합니다!
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<PostListResponse> getPosts(
             @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestParam(value = "type", required = false) String type,
@@ -36,7 +36,7 @@ public class PostController {
         return ResponseEntity.ok(postService.findAllPosts(type, keyword, pageable, clientId));
     }
 
-    @PostMapping
+    @PostMapping("/")
     public PostCreateResponse create(
             @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestBody PostCreateRequest dto

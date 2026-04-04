@@ -1,4 +1,4 @@
-package com.board.api.global;
+package com.example.board.global;
 
 import org.springframework.http.HttpStatus;
 

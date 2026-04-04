@@ -1,4 +1,4 @@
-package com.board.api.global;
+package com.example.board.global;
 
 public class CustomException extends RuntimeException {
 
