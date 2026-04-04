@@ -140,10 +140,13 @@ public class PostService {
                             .title(post.getTitle())
                             .content(post.getContent())
                             .image(post.getImage() != null ? imageBaseUrl + post.getImage() : null)
-                            //.image(post.getImage() != null ? "https://mksolution.dothome.co.kr/images/" + post.getImage() : null)
                             .createdAt(formattedDate) // 안전하게 처리된 날짜 사용
                             .updatedAt(post.getUpdatedAt() != null ? post.getUpdatedAt().toString() : "")
-                            .user(Map.of("_id", 1, "name", post.getUserName() != null ? post.getUserName() : "익명"))
+                            //.user(Map.of("_id", 1, "name", post.getUserName() != null ? post.getUserName() : "익명"))
+                            .user(PostItem.PostUser.builder()
+                                    ._id(post.getUserId() != null ? post.getUserId() : 1L)
+                                    .name(post.getUserName() != null ? post.getUserName() : "익명")
+                                    .build())
                             .build();
                 })
                 .collect(Collectors.toList());

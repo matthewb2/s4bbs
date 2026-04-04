@@ -32,7 +32,11 @@ public class PostController {
             @RequestParam(value = "limit", defaultValue = "10") int limit,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        // page가 1 미만으로 들어올 경우를 대비해 Math.max 사용
+        int pageNum = Math.max(0, page - 1);
+
+        // [수정] 정렬 조건을 명확히 전달
+        Pageable pageable = PageRequest.of(pageNum, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(postService.findAllPosts(type, keyword, pageable, clientId));
     }
 
