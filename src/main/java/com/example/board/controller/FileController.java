@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "*") // 모든 도메인 허용
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/files")
 @RequiredArgsConstructor
 public class FileController {
 
