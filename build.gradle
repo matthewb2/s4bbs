@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.2'
+    id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -22,9 +22,13 @@ dependencies {
     // 1. MariaDB, MySQL 제거 후 PostgreSQL 추가
     runtimeOnly 'org.postgresql:postgresql'
     
-    // 2. 로컬 테스트용 H2 (필요 없다면 삭제 가능)
-    implementation 'com.h2database:h2'
-
+    // Jackson 라이브러리 명시적 추가
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    // 만약 다른 Jackson 패키지도 필요하다면 (보통 databind만 넣어도 의존성으로 딸려옵니다)
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    
     // 3. 스프링 부트 스타터 (중복 제거 및 정리)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
