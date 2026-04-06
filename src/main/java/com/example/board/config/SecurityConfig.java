@@ -24,6 +24,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/**").permitAll()
                 .requestMatchers("/posts/**").permitAll()
+                .requestMatchers("/files/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();

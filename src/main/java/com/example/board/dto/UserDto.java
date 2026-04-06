@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 public class UserDto {
@@ -84,5 +85,26 @@ public class UserDto {
     public static class UserRegisterResponse {
         private int ok;
         private UserResponse item;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserListResponse {
+        private int ok;
+        private List<UserResponse> item;
+        private Pagination pagination;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Pagination {
+        private int page;
+        private int limit;
+        private long total;
+        private int totalPages;
     }
 }
