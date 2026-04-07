@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -14,11 +16,36 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/email")
+    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.checkEmail(email));
+    }
+
+
+    @GetMapping("/name")
+    public ResponseEntity<Map<String, Object>> checkName(@RequestParam String name) {
+        return ResponseEntity.ok(userService.checkName(name));
+    }
+
     @PostMapping("/")
     public ResponseEntity<UserDto.UserRegisterResponse> register(
             @Valid @RequestBody UserDto.UserRegisterRequest request
     ) {
         return ResponseEntity.status(201).body(userService.register(request));
+    }
+
+    @PostMapping("/signup/oauth")
+    public ResponseEntity<UserDto.UserRegisterResponse> oauthSignup(
+            @Valid @RequestBody UserDto.OAuthSignupRequest request
+    ) {
+        return ResponseEntity.status(201).body(userService.oauthSignup(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDto.LoginResponse> login(
+            @Valid @RequestBody UserDto.LoginRequest request
+    ) {
+        return ResponseEntity.ok(userService.login(request));
     }
 
     @GetMapping("/")

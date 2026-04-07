@@ -30,6 +30,8 @@ public class User {
 
     private String image;
 
+    private String loginType;
+
     private String phone;
 
     private String address;

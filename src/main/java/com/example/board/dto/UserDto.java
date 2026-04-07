@@ -45,6 +45,26 @@ public class UserDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class OAuthSignupRequest {
+        @NotBlank(message = "type은 필수입니다")
+        private String type;
+
+        @NotBlank(message = "loginType은 필수입니다")
+        private String loginType;
+
+        private String email;
+
+        private String name;
+
+        private String image;
+
+        private Map<String, Object> extra;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserResponse {
         private Long _id;
         private String email;
@@ -106,5 +126,77 @@ public class UserDto {
         private int limit;
         private long total;
         private int totalPages;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginRequest {
+        @NotBlank(message = "email은 필수입니다")
+        @Email(message = "이메일 형식에 맞지 않습니다")
+        private String email;
+
+        @NotBlank(message = "password는 필수입니다")
+        private String password;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginResponse {
+        private int ok;
+        private UserResponseWithToken item;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserResponseWithToken {
+        private Long _id;
+        private String email;
+        private String name;
+        private String type;
+        private String loginType;
+        private String image;
+        private String phone;
+        private String address;
+        private String extra;
+        private String createdAt;
+        private String updatedAt;
+        private Integer notifications;
+        private Token token;
+
+        public static UserResponseWithToken fromEntity(User user) {
+            return UserResponseWithToken.builder()
+                    ._id(user.getId())
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .type(user.getType())
+                    .loginType(user.getLoginType())
+                    .image(user.getImage())
+                    .phone(user.getPhone())
+                    .address(user.getAddress())
+                    .extra(user.getExtra())
+                    .createdAt(format(user.getCreatedAt()))
+                    .updatedAt(format(user.getUpdatedAt()))
+                    .build();
+        }
+
+        private static String format(LocalDateTime dt) {
+            if (dt == null) return "";
+            return dt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Token {
+        private String accessToken;
+        private String refreshToken;
     }
 }

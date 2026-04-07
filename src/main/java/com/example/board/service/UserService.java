@@ -1,5 +1,6 @@
 package com.example.board.service;
 
+import com.example.board.config.JwtTokenProvider;
 import com.example.board.dto.UserDto;
 import com.example.board.entity.User;
 import com.example.board.global.CustomException;
@@ -28,6 +29,26 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> checkEmail(String email) {
+        boolean exists = userRepository.existsByEmail(email);
+        if (exists) {
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
+        return Map.of("ok", 1);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> checkName(String name) {
+        boolean exists = userRepository.existsByName(name);
+        if (exists) {
+            throw new CustomException(ErrorCode.DUPLICATE_NAME);
+        }
+        return Map.of("ok", 1);
+    }
 
     @Transactional
     public UserDto.UserRegisterResponse register(UserDto.UserRegisterRequest request) {
@@ -43,6 +64,58 @@ public class UserService {
                 .image(request.getImage())
                 .phone(request.getPhone())
                 .address(request.getAddress())
+                .loginType("email")
+                .build();
+
+        if (request.getExtra() != null) {
+            try {
+                user.setExtra(objectMapper.writeValueAsString(request.getExtra()));
+            } catch (JsonProcessingException e) {
+                throw new CustomException(ErrorCode.INTERNAL_ERROR);
+            }
+        }
+
+        User saved = userRepository.save(user);
+
+        return UserDto.UserRegisterResponse.builder()
+                .ok(1)
+                .item(UserDto.UserResponse.fromEntity(saved))
+                .build();
+    }
+
+    @Transactional
+    public UserDto.LoginResponse login(UserDto.LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_FAILED));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.LOGIN_FAILED);
+        }
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getType());
+        String refreshToken = jwtTokenProvider.generateRefreshToken();
+
+        UserDto.UserResponseWithToken response = UserDto.UserResponseWithToken.fromEntity(user);
+        response.setToken(UserDto.Token.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build());
+
+        return UserDto.LoginResponse.builder()
+                .ok(1)
+                .item(response)
+                .build();
+    }
+
+    @Transactional
+    public UserDto.UserRegisterResponse oauthSignup(UserDto.OAuthSignupRequest request) {
+        User user = User.builder()
+                .type(request.getType())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode("oauth_" + System.currentTimeMillis()))
+                .name(request.getName())
+                .image(request.getImage())
+                .loginType(request.getLoginType())
                 .build();
 
         if (request.getExtra() != null) {
