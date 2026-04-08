@@ -105,6 +105,95 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    public PostUpdateResponse updatePost(Long postId, PostUpdateRequest request, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUserId().equals(userId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        if (request.getTitle() != null) {
+            post.setTitle(request.getTitle());
+        }
+        if (request.getContent() != null) {
+            post.setContent(request.getContent());
+        }
+        if (request.getImage() != null) {
+            post.setImage(request.getImage());
+        }
+        
+        Post saved = postRepository.save(post);
+
+        return PostUpdateResponse.builder()
+                .ok(1)
+                .item(PostUpdateResponse.PostUpdateItem.builder()
+                        ._id(saved.getId())
+                        .title(saved.getTitle())
+                        .content(saved.getContent())
+                        .updatedAt(format(saved.getUpdatedAt()))
+                        .build())
+                .build();
+    }
+
+    public Map<String, Object> deletePost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUserId().equals(userId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        postRepository.delete(post);
+        return Map.of("ok", 1);
+    }
+
+    public PostListResponse findMyPosts(Long userId, String type, String keyword, Pageable pageable) {
+        Page<Post> postPage;
+        
+        if (type != null && keyword != null) {
+            postPage = postRepository.findByUserIdAndTypeAndTitleContaining(userId, type, keyword, pageable);
+        } else if (type != null) {
+            postPage = postRepository.findByUserIdAndType(userId, type, pageable);
+        } else {
+            postPage = postRepository.findByUserId(userId, pageable);
+        }
+
+        List<PostItem> items = postPage.getContent().stream()
+                .map(post -> {
+                    String formattedDate = "";
+                    if (post.getCreatedAt() != null) {
+                        formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+                    }
+
+                    return PostItem.builder()
+                            ._id(post.getId())
+                            .type(post.getType())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .image(post.getImage() != null ? imageBaseUrl + post.getImage() : null)
+                            .createdAt(formattedDate)
+                            .updatedAt(post.getUpdatedAt() != null ? post.getUpdatedAt().toString() : "")
+                            .user(PostItem.PostUser.builder()
+                                    ._id(post.getUserId() != null ? post.getUserId() : 1L)
+                                    .name(post.getUserName() != null ? post.getUserName() : "익명")
+                                    .build())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return PostListResponse.builder()
+                .ok(1)
+                .item(items)
+                .pagination(PostListResponse.Pagination.builder()
+                        .page(pageable.getPageNumber() + 1)
+                        .limit(pageable.getPageSize())
+                        .total(postPage.getTotalElements())
+                        .totalPages(postPage.getTotalPages())
+                        .build())
+                .build();
+    }
+
     public PostListResponse findAllPosts(String type, String keyword, Pageable pageable, String clientId) {
         Page<Post> postPage;
         if (clientId != null && !clientId.isEmpty()) {

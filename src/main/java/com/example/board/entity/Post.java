@@ -35,6 +35,9 @@ public class Post {
     private String userName;
     private String clientId;
 
+    @Column(columnDefinition = "TEXT")
+    private String extra;
+
     @CreationTimestamp // 데이터 생성 시 현재 시간 자동 삽입
     private LocalDateTime createdAt;
 
