@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.dto.UserDto;
+import com.example.board.service.KakaoService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
     @GetMapping("/email")
     public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
@@ -48,6 +50,11 @@ public class UserController {
         return ResponseEntity.ok(userService.login(request));
     }
 
+    @PostMapping("/login/kakao")
+    public ResponseEntity<UserDto.KakaoLoginResponse> kakaoLogin(@RequestBody UserDto.KakaoLoginRequest request) {
+        return ResponseEntity.ok(kakaoService.login(request));
+    }
+
     @GetMapping("/")
     public ResponseEntity<UserDto.UserListResponse> list(
             @RequestParam(value = "_id", required = false) Long id,
@@ -62,5 +69,26 @@ public class UserController {
             @RequestParam(value = "sort", required = false) String sort
     ) {
         return ResponseEntity.ok(userService.findUsers(id, email, name, phone, type, address, custom, page, limit, sort));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto.UserRegisterResponse> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUser(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto.UserUpdateResponse> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserDto.UserUpdateRequest request
+    ) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
+    }
+
+    @GetMapping("/{id}/{field}")
+    public ResponseEntity<Map<String, Object>> getUserField(
+            @PathVariable Long id,
+            @PathVariable String field
+    ) {
+        return ResponseEntity.ok(userService.getUserField(id, field));
     }
 }

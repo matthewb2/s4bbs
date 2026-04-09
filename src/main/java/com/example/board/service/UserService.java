@@ -184,4 +184,83 @@ public class UserService {
                         .build())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public UserDto.UserRegisterResponse getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserDto.UserRegisterResponse.builder()
+                .ok(1)
+                .item(UserDto.UserResponse.fromEntity(user))
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getUserField(Long userId, String field) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Object value;
+        switch (field) {
+            case "email":
+                value = user.getEmail();
+                break;
+            case "name":
+                value = user.getName();
+                break;
+            case "type":
+                value = user.getType();
+                break;
+            case "image":
+                value = user.getImage();
+                break;
+            case "phone":
+                value = user.getPhone();
+                break;
+            case "address":
+                value = user.getAddress();
+                break;
+            case "extra":
+                value = user.getExtra();
+                break;
+            default:
+                value = null;
+        }
+
+        return Map.of("ok", 1, "item", Map.of(field, value));
+    }
+
+    @Transactional
+    public UserDto.UserUpdateResponse updateUser(Long userId, UserDto.UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+        if (request.getImage() != null) {
+            user.setImage(request.getImage());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+        if (request.getExtra() != null) {
+            try {
+                user.setExtra(objectMapper.writeValueAsString(request.getExtra()));
+            } catch (JsonProcessingException e) {
+                throw new CustomException(ErrorCode.INTERNAL_ERROR);
+            }
+        }
+
+        User saved = userRepository.save(user);
+
+        return UserDto.UserUpdateResponse.builder()
+                .ok(1)
+                .item(UserDto.UserResponse.fromEntity(saved))
+                .build();
+    }
 }

@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.address LIKE %:address%")
     Page<User> findByAddressContaining(@Param("address") String address, Pageable pageable);
+
+    Optional<User> findByLoginTypeAndEmail(String loginType, String email);
 }

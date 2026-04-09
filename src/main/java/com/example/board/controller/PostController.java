@@ -115,6 +115,11 @@ public class PostController {
         return ResponseEntity.ok(postService.deletePost(id, userId));
     }
 
+    @GetMapping("/{id}/replies")
+    public ResponseEntity<ReplyResponse> getReplies(@PathVariable Long id) {
+        return ResponseEntity.ok(replyService.getReplies(id));
+    }
+
     @PostMapping("/{id}/replies")
     public ResponseEntity<ReplyResponse> createReply(
             @PathVariable Long id,
@@ -130,6 +135,27 @@ public class PostController {
             userImage = user.getImage();
         }
         return ResponseEntity.status(201).body(replyService.createReply(id, request, userId, userName, userImage));
+    }
+
+    @PatchMapping("/{id}/replies/{replyId}")
+    public ResponseEntity<Map<String, Object>> updateReply(
+            @PathVariable Long id,
+            @PathVariable Long replyId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody ReplyRequest request
+    ) {
+        Long userId = getUserIdFromHeader(authHeader);
+        return ResponseEntity.ok(replyService.updateReply(replyId, request, userId));
+    }
+
+    @DeleteMapping("/{id}/replies/{replyId}")
+    public ResponseEntity<Map<String, Object>> deleteReply(
+            @PathVariable Long id,
+            @PathVariable Long replyId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader
+    ) {
+        Long userId = getUserIdFromHeader(authHeader);
+        return ResponseEntity.ok(replyService.deleteReply(replyId, userId));
     }
 
     @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -199,4 +199,45 @@ public class UserDto {
         private String accessToken;
         private String refreshToken;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KakaoLoginRequest {
+        private String code;
+        private String redirectUri;
+        private Map<String, Object> user;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KakaoLoginResponse {
+        private int ok;
+        private Boolean isNew;
+        private UserResponseWithToken item;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserUpdateRequest {
+        private String name;
+        private String image;
+        private String phone;
+        private String address;
+        private Map<String, Object> extra;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserUpdateResponse {
+        private int ok;
+        private UserResponse item;
+    }
 }

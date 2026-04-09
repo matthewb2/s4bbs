@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Data
 @Builder
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 public class ReplyResponse {
     private int ok;
     private ReplyItem item;
+    private List<ReplyItem> itemList;
 
     @Data
     @Builder
