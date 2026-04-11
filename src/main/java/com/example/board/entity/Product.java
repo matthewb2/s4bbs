@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products")
+@Table(name = "product")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,6 +26,7 @@ public class Product {
 
     private Integer shippingFees;
 
+    @Column(name = "is_show") // 또는 "`show`" 처럼 백틱으로 감싸기
     private Boolean show;
 
     private Boolean active;

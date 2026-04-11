@@ -3,18 +3,17 @@ package com.example.board.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "bookmarks")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class Bookmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,28 +21,16 @@ public class User {
 
     private String type;
 
-    private String email;
+    private Long userId;
 
-    private String password;
+    private Long targetId;
 
-    private String name;
+    private Boolean isLike;
 
-    private String image;
+    private String memo;
 
-    private String loginType;
-
-    private String phone;
-
-    private String address;
-
-    private Boolean delete;
-
-    @Column(columnDefinition = "TEXT")
     private String extra;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

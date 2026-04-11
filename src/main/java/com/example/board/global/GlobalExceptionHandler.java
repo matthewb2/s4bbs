@@ -25,6 +25,15 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", 0);
+        response.put("message", e.getMessage() != null ? e.getMessage() : "요청하신 작업 처리에 실패했습니다. 잠시 후 다시 이용해 주시기 바랍니다.");
+        
+        return ResponseEntity.status(500).body(response);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException e) {
         Map<String, Object> response = new HashMap<>();

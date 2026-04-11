@@ -8,38 +8,33 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    private Long userId;
 
-    private String email;
+    private String state;
 
-    private String password;
+    private String products;
 
-    private String name;
+    private Integer productsCost;
 
-    private String image;
+    private Integer shippingFees;
 
-    private String loginType;
+    private Integer discountProducts;
 
-    private String phone;
+    private Integer discountShippingFees;
 
-    private String address;
-
-    private Boolean delete;
-
-    @Column(columnDefinition = "TEXT")
-    private String extra;
+    private Integer total;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

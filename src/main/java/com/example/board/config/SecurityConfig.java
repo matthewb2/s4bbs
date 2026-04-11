@@ -25,6 +25,9 @@ public class SecurityConfig {
                 .requestMatchers("/users/**").permitAll()
                 .requestMatchers("/posts/**").permitAll()
                 .requestMatchers("/files/**").permitAll()
+                .requestMatchers("/orders/**").permitAll()
+                .requestMatchers("/products/**").permitAll()
+                .requestMatchers("/replies/**").permitAll()
                 .anyRequest().permitAll()
             );
         return http.build();
