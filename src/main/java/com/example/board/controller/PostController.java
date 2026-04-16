@@ -83,13 +83,17 @@ public class PostController {
 
     @PostMapping("/")
     public PostCreateResponse create(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestHeader(value = "client-id", required = false) String clientId,
             @RequestBody PostCreateRequest dto
     ) {
-
-        System.out.println(dto);
-
-        return postService.create(dto, clientId);
+        Long userId = getUserIdFromHeader(authHeader);
+        String userName = null;
+        var user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            userName = user.getName();
+        }
+        return postService.create(dto, clientId, userId, userName);
     }
     @GetMapping("/{id}")
     public PostResponse findById(@PathVariable Long id) {

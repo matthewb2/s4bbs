@@ -1,43 +1,52 @@
 package com.example.board.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.board.dto.*;
 import com.example.board.entity.Post;
 import com.example.board.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable; // 이 줄이 핵심입니다.
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Service
-@RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
+    private final ObjectMapper objectMapper;
     @Value("${ftp.server}")
     private String imageServer;
 
     private String imageBaseUrl;
+
+    public PostService(PostRepository postRepository, ObjectMapper objectMapper) {
+        this.postRepository = postRepository;
+        this.objectMapper = objectMapper;
+    }
+
     @PostConstruct
     public void init() {
-        // 모든 주입이 끝난 후 실행되므로 imageServer가 null이 아닙니다.
         this.imageBaseUrl = imageServer + "/images/";
     }
 
-
-
-    public PostCreateResponse create(PostCreateRequest req, String clientId) {
-
-
+    public PostCreateResponse create(PostCreateRequest req, String clientId, Long userId, String userName) {
         LocalDateTime now = LocalDateTime.now();
+
+        Map<String, Object> extra = req.getExtra();
+        if (extra == null) {
+            extra = new HashMap<>();
+        }
+        extra.put("user", Map.of("_id", userId, "name", userName));
 
         Post post = Post.builder()
                 .type(req.getType() == null ? "post" : req.getType())
@@ -47,12 +56,18 @@ public class PostService {
                 .tag(req.getTag())
                 .productId(req.getProduct_id())
                 .views(0)
-                .userId(4L)              // ★ 인증 붙으면 교체
-                .userName("제이지")       // ★ 인증 붙으면 교체
+                .userId(userId)
+                .userName(userName)
                 .clientId(clientId)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
+
+        try {
+            post.setExtra(objectMapper.writeValueAsString(extra));
+        } catch (JsonProcessingException e) {
+            // ignore
+        }
 
         Post saved = postRepository.save(post);
 
@@ -83,8 +98,8 @@ public class PostService {
     private String format(LocalDateTime dt) {
         return dt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
     }
-    public PostResponse findById(Long id) {
 
+    public PostResponse findById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -94,13 +109,11 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .image(post.getImage() != null ? imageBaseUrl + post.getImage() : null)
-                //.image(post.getImage() != null ? "https://mksolution.dothome.co.kr/images/" + post.getImage() : null)
                 .tag(post.getTag())
                 .views(post.getViews())
                 .build();
     }
 
-    // 이 메서드가 추가되어야 합니다.
     public Post save(Post post) {
         return postRepository.save(post);
     }
@@ -122,7 +135,7 @@ public class PostService {
         if (request.getImage() != null) {
             post.setImage(request.getImage());
         }
-        
+
         Post saved = postRepository.save(post);
 
         return PostUpdateResponse.builder()
@@ -150,7 +163,7 @@ public class PostService {
 
     public PostListResponse findMyPosts(Long userId, String type, String keyword, Pageable pageable) {
         Page<Post> postPage;
-        
+
         if (type != null && keyword != null) {
             postPage = postRepository.findByUserIdAndTypeAndTitleContaining(userId, type, keyword, pageable);
         } else if (type != null) {
@@ -213,13 +226,11 @@ public class PostService {
                 postPage = postRepository.findAll(pageable);
             }
         }
-// PostService.java 내의 해당 부분 수정
+
         List<PostItem> items = postPage.getContent().stream()
                 .map(post -> {
-                    // [수정] 날짜 포맷팅 및 Null 체크 안전하게 처리
                     String formattedDate = "";
                     if (post.getCreatedAt() != null) {
-                        // 명세서 규격에 맞게 포맷팅 (예: 2026.01.14 18:14:07)
                         formattedDate = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
                     }
 
@@ -229,9 +240,8 @@ public class PostService {
                             .title(post.getTitle())
                             .content(post.getContent())
                             .image(post.getImage() != null ? imageBaseUrl + post.getImage() : null)
-                            .createdAt(formattedDate) // 안전하게 처리된 날짜 사용
+                            .createdAt(formattedDate)
                             .updatedAt(post.getUpdatedAt() != null ? post.getUpdatedAt().toString() : "")
-                            //.user(Map.of("_id", 1, "name", post.getUserName() != null ? post.getUserName() : "익명"))
                             .user(PostItem.PostUser.builder()
                                     ._id(post.getUserId() != null ? post.getUserId() : 1L)
                                     .name(post.getUserName() != null ? post.getUserName() : "익명")
@@ -251,5 +261,4 @@ public class PostService {
                         .build())
                 .build();
     }
-
 }
