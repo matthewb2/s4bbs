@@ -26,4 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findByAddressContaining(@Param("address") String address, Pageable pageable);
 
     Optional<User> findByLoginTypeAndEmail(String loginType, String email);
+
+    @Query("SELECT u FROM User u WHERE u.loginType != 'email' AND u.extra LIKE %:providerAccountId%")
+    Optional<User> findByProviderAccountId(String providerAccountId);
 }

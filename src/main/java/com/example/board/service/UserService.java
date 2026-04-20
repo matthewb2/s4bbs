@@ -108,6 +108,28 @@ public class UserService {
     }
 
     @Transactional
+    public UserDto.LoginResponse loginWith(UserDto.LoginWithRequest request) {
+        String providerAccountId = request.getProviderAccountId();
+        
+        User user = userRepository.findByProviderAccountId(providerAccountId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getType());
+        String refreshToken = jwtTokenProvider.generateRefreshToken();
+
+        UserDto.UserResponseWithToken response = UserDto.UserResponseWithToken.fromEntity(user);
+        response.setToken(UserDto.Token.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build());
+
+        return UserDto.LoginResponse.builder()
+                .ok(1)
+                .item(response)
+                .build();
+    }
+
+    @Transactional
     public UserDto.UserRegisterResponse oauthSignup(UserDto.OAuthSignupRequest request) {
         User user = User.builder()
                 .type(request.getType())

@@ -224,6 +224,24 @@ public class UserDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class GoogleLoginRequest {
+        private String code;
+        private String redirectUri;
+        private Map<String, Object> user;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginWithRequest {
+        private String providerAccountId;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserUpdateRequest {
         private String name;
         private String image;

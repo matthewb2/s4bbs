@@ -49,6 +49,11 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.login(request));
     }
+    
+    @PostMapping("/login/with")
+    public ResponseEntity<UserDto.LoginResponse> loginWith(@RequestBody UserDto.LoginWithRequest request) {
+        return ResponseEntity.ok(userService.loginWith(request));
+    }
 
     @PostMapping("/login/kakao")
     public ResponseEntity<UserDto.KakaoLoginResponse> kakaoLogin(@RequestBody UserDto.KakaoLoginRequest request) {
