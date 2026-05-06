@@ -30,6 +30,13 @@ public class FtpService {
     @Value("${ftp.directory}")
     private String remoteDir;
 
+    @Value("${ftp.server}")
+    private String serverUrl;
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     public String uploadFile(MultipartFile file) {
         FTPClient ftpClient = new FTPClient();
         String originalFilename = file.getOriginalFilename();

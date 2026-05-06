@@ -6,7 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@CrossOrigin(origins = "*") // 모든 도메인 허용
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
@@ -14,18 +18,35 @@ public class FileController {
 
     private final FtpService ftpService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 비어있습니다.");
+    @PostMapping("/")
+    public ResponseEntity<Map<String, Object>> upload(@RequestParam("attach") List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("ok", 0, "message", "파일이 없습니다."));
         }
 
-        String savedFileName = ftpService.uploadFile(file);
-
-        if (savedFileName != null) {
-            return ResponseEntity.ok("파일 업로드 완료. 저장된 파일명: " + savedFileName);
-        } else {
-            return ResponseEntity.internalServerError().body("파일 업로드에 실패했습니다.");
+        List<Map<String, String>> items = new ArrayList<>();
+        int maxFiles = 10;
+        
+        if (files.size() > maxFiles) {
+            return ResponseEntity.status(422).body(Map.of("ok", 0, "message", "최대 10개까지 업로드 가능합니다."));
         }
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                String savedFileName = ftpService.uploadFile(file);
+                String filePath = ftpService.getServerUrl() + "/images/" + savedFileName;
+                
+                items.add(Map.of(
+                    "name", file.getOriginalFilename(),
+                    "path", filePath
+                ));
+            }
+        }
+
+        if (items.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("ok", 0, "message", "업로드할 파일이 없습니다."));
+        }
+
+        return ResponseEntity.status(201).body(Map.of("ok", 1, "item", items));
     }
 }

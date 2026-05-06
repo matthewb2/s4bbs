@@ -135,6 +135,9 @@ public class PostService {
         if (request.getImage() != null) {
             post.setImage(request.getImage());
         }
+        if (request.getTag() != null) {
+            post.setTag(request.getTag());
+        }
 
         Post saved = postRepository.save(post);
 

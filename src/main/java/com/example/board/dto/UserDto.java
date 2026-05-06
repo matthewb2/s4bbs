@@ -235,7 +235,10 @@ public class UserDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginWithRequest {
+        private String provider;
         private String providerAccountId;
+        private String code;
+        private String redirectUri;
     }
 
     @Data

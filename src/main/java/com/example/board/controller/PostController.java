@@ -95,6 +95,7 @@ public class PostController {
         }
         return postService.create(dto, clientId, userId, userName);
     }
+
     @GetMapping("/{id}")
     public PostResponse findById(@PathVariable Long id) {
         return postService.findById(id);
@@ -160,32 +161,6 @@ public class PostController {
     ) {
         Long userId = getUserIdFromHeader(authHeader);
         return ResponseEntity.ok(replyService.deleteReply(replyId, userId));
-    }
-
-    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Post> createPostWithImage(
-            @RequestHeader(value = "client-id", required = false) String clientId,
-            @RequestPart("post") PostRequest postRequest, // 게시글 내용 (JSON)
-            @RequestPart(value = "file", required = false) MultipartFile file // 이미지 파일
-    ) {
-        String savedFileName = null;
-
-        // 1. 파일이 있으면 FTP 업로드 수행
-        if (file != null && !file.isEmpty()) {
-            savedFileName = ftpService.uploadFile(file);
-        }
-
-        // 2. 게시글 정보와 파일명을 매핑하여 저장
-        Post post = Post.builder()
-                .title(postRequest.getTitle())
-                .content(postRequest.getContent())
-                .image(savedFileName) // 저장된 UUID 파일명 기록
-                .userName(postRequest.getUserName())
-                .clientId(clientId)
-                .build();
-
-        Post savedPost = postService.save(post);
-        return ResponseEntity.ok(savedPost);
     }
 
     private Long getUserIdFromHeader(String authHeader) {

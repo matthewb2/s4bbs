@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.dto.UserDto;
+import com.example.board.service.GoogleService;
 import com.example.board.service.KakaoService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final GoogleService googleService;
 
     @GetMapping("/email")
     public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
@@ -49,15 +51,15 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.login(request));
     }
-    
-    @PostMapping("/login/with")
-    public ResponseEntity<UserDto.LoginResponse> loginWith(@RequestBody UserDto.LoginWithRequest request) {
-        return ResponseEntity.ok(userService.loginWith(request));
-    }
 
     @PostMapping("/login/kakao")
     public ResponseEntity<UserDto.KakaoLoginResponse> kakaoLogin(@RequestBody UserDto.KakaoLoginRequest request) {
         return ResponseEntity.ok(kakaoService.login(request));
+    }
+
+    @PostMapping("/login/with")
+    public ResponseEntity<UserDto.LoginResponse> loginWith(@RequestBody UserDto.LoginWithRequest request) {
+        return ResponseEntity.ok(userService.loginWith(request));
     }
 
     @GetMapping("/")
