@@ -29,20 +29,23 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity<UserDto.UserRegisterResponse> register(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @Valid @RequestBody UserDto.UserRegisterRequest request
     ) {
-        return ResponseEntity.status(201).body(userService.register(request));
+        return ResponseEntity.status(201).body(userService.register(request, clientId));
     }
 
     @PostMapping("/signup/oauth")
     public ResponseEntity<UserDto.UserRegisterResponse> oauthSignup(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @Valid @RequestBody UserDto.OAuthSignupRequest request
     ) {
-        return ResponseEntity.status(201).body(userService.oauthSignup(request));
+        return ResponseEntity.status(201).body(userService.oauthSignup(request, clientId));
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserDto.LoginResponse> login(
+            @RequestHeader(value = "client-id", required = false) String clientId,
             @Valid @RequestBody UserDto.LoginRequest request
     ) {
         return ResponseEntity.ok(userService.login(request));

@@ -51,7 +51,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.UserRegisterResponse register(UserDto.UserRegisterRequest request) {
+    public UserDto.UserRegisterResponse register(UserDto.UserRegisterRequest request, String clientId) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
@@ -65,6 +65,7 @@ public class UserService {
                 .phone(request.getPhone())
                 .address(request.getAddress())
                 .loginType("email")
+                .clientId(clientId)
                 .build();
 
         if (request.getExtra() != null) {
@@ -130,7 +131,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.UserRegisterResponse oauthSignup(UserDto.OAuthSignupRequest request) {
+    public UserDto.UserRegisterResponse oauthSignup(UserDto.OAuthSignupRequest request, String clientId) {
         User user = User.builder()
                 .type(request.getType())
                 .email(request.getEmail())
@@ -138,6 +139,7 @@ public class UserService {
                 .name(request.getName())
                 .image(request.getImage())
                 .loginType(request.getLoginType())
+                .clientId(clientId)
                 .build();
 
         if (request.getExtra() != null) {
