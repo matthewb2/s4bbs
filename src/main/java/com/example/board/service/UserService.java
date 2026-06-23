@@ -94,7 +94,7 @@ public class UserService {
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getType());
-        String refreshToken = jwtTokenProvider.generateRefreshToken();
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
 
         UserDto.UserResponseWithToken response = UserDto.UserResponseWithToken.fromEntity(user);
         response.setToken(UserDto.Token.builder()
@@ -116,7 +116,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getType());
-        String refreshToken = jwtTokenProvider.generateRefreshToken();
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
 
         UserDto.UserResponseWithToken response = UserDto.UserResponseWithToken.fromEntity(user);
         response.setToken(UserDto.Token.builder()

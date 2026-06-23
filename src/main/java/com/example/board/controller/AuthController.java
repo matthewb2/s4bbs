@@ -41,7 +41,7 @@ public class AuthController {
 
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
         String accessToken = jwtTokenProvider.generateAccessToken(userId, "user");
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken();
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
 
         return ResponseEntity.ok(Map.of(
                 "ok", 1,

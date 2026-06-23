@@ -158,7 +158,7 @@ public class BookmarkService {
         return BookmarkResponse.UserItem.builder()
                 ._id(u.getId())
                 .name(u.getName())
-                .delete(u.getDelete() != null && u.getDelete() == 1)
+                .delete(u.getDelete() != null && u.getDelete())
                 .build();
     }
 

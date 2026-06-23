@@ -38,12 +38,14 @@ public class User {
 
     private String clientId;
 
+    @Column(name = "email_verified")
     private Boolean emailVerified;
 
+    @Column(name = "email_verification_token")
     private String emailVerificationToken;
 
-    @Column(name = "is_deleted") // DB 컬럼명을 delete 대신 다른 것으로 변경
-    private Integer delete;
+    @Column(name = "is_deleted")
+    private Boolean delete;
 
     @Column(columnDefinition = "TEXT")
     private String extra;

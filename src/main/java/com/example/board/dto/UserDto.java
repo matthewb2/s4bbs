@@ -86,7 +86,7 @@ public class UserDto {
                     .image(user.getImage())
                     .phone(user.getPhone())
                     .address(user.getAddress())
-                    .extra(user.getExtra())
+                    .extra(user.getExtra() != null ? user.getExtra() : "{}")
                     .createdAt(format(user.getCreatedAt()))
                     .updatedAt(format(user.getUpdatedAt()))
                     .build();
@@ -179,9 +179,10 @@ public class UserDto {
                     .image(user.getImage())
                     .phone(user.getPhone())
                     .address(user.getAddress())
-                    .extra(user.getExtra())
+                    .extra(user.getExtra() != null ? user.getExtra() : "{}")
                     .createdAt(format(user.getCreatedAt()))
                     .updatedAt(format(user.getUpdatedAt()))
+                    .notifications(0)
                     .build();
         }
 

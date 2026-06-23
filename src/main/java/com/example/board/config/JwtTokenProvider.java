@@ -32,11 +32,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken() {
+    public String generateRefreshToken(Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + 2592000000L);
 
         return Jwts.builder()
+                .subject(String.valueOf(userId))
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
