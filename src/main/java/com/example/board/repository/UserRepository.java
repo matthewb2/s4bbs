@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.loginType != 'email' AND u.extra LIKE %:providerAccountId%")
     Optional<User> findByProviderAccountId(String providerAccountId);
+
+    Optional<User> findByEmailVerificationToken(String token);
 }
